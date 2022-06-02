@@ -2,68 +2,61 @@ const getYieldForPlant = (plant, envFactors) => {
     if (!envFactors) {
         return plant.yield;
     } else if (!envFactors.wind && !envFactors.soil) {
-        const sunCondition = envFactors.sun;
-        const envFactor = plant.factor.sun[sunCondition] / 100;
+        const sunFactor = plant.factor.sun[envFactors.sun] / 100;
 
-        return envFactor * plant.yield;
+        return sunFactor * plant.yield;
     } else if (!envFactors.sun && !envFactors.soil) {
-        const windCondition = envFactors.wind;
-        const envFactor = plant.factor.wind[windCondition] / 100;
+        const windFactor = plant.factor.wind[envFactors.wind] / 100;
 
-        return envFactor * plant.yield;
-    } else if (envFactors.sun && envFactors.wind) {
-        const sunCondition = envFactors.sun;
-        const windCondition = envFactors.wind;
+        return windFactor * plant.yield;
+    } else if (!envFactors.sun && !envFactors.wind) {
+        const soilFactor = plant.factor.soil[envFactors.soil] / 100;
 
-        const sunFactor = plant.factor.sun[sunCondition] / 100;
-        const windFactor = plant.factor.wind[windCondition] / 100;
+        return soilFactor * plant.yield;
+    } else if (envFactors.sun && envFactors.wind && !envFactors.soil) {
+        const sunFactor = plant.factor.sun[envFactors.sun] / 100;
+        const windFactor = plant.factor.wind[envFactors.wind] / 100;
 
         return sunFactor * windFactor * plant.yield;
-    }
+    } else if (envFactors.sun && envFactors.soil && !envFactors.wind) {
+        const sunFactor = plant.factor.sun[envFactors.sun] / 100;
+        const soilFactor = plant.factor.soil[envFactors.soil] / 100;
+
+        return sunFactor * soilFactor * plant.yield;
+    } else if (envFactors.wind && envFactors.soil && !envFactors.sun) {
+        const windFactor = plant.factor.wind[envFactors.wind] / 100;
+        const soilFactor = plant.factor.soil[envFactors.soil] / 100;
+
+        return windFactor * soilFactor * plant.yield;
+    } else if (envFactors.sun && envFactors.wind && envFactors.soil) {
+        const sunFactor = plant.factor.sun[envFactors.sun] / 100;
+        const windFactor = plant.factor.wind[envFactors.wind] / 100;
+        const soilFactor = plant.factor.soil[envFactors.soil] / 100;
+
+        return sunFactor * windFactor * soilFactor * plant.yield;
+    } 
 };
 
-const getYieldForCrop = (test, envFactors) => {
-    if (!envFactors) {
-        return getYieldForPlant(test.crop) * test.numCrops;
-    } else if (envFactors.sun && !envFactors.wind) {
-        const sunCondition = envFactors.sun;
-        const envFactor = test.crop.factor.sun[sunCondition] / 100;
+const getYieldForCrop = (test, envFactors) => getYieldForPlant(test.crop, envFactors) * test.numCrops;
 
-        return getYieldForPlant(test.crop) * test.numCrops * envFactor;
-    } else if (envFactors.wind && !envFactors.sun) {
-        const windCondition = envFactors.wind;
-        const envFactor = test.crop.factor.wind[windCondition] / 100;
-
-        return getYieldForPlant(test.crop) * test.numCrops * envFactor;
-    } else if (envFactors.sun && envFactors.wind) {
-        const sunCondition = envFactors.sun;
-        const windCondition = envFactors.wind;
-
-        const sunFactor = test.crop.factor.sun[sunCondition] / 100;
-        const windFactor = test.crop.factor.wind[windCondition] / 100;
-
-        return getYieldForPlant(test.crop) * test.numCrops * sunFactor * windFactor;
-    }
-}
-
-const getTotalYield = test => {
+const getTotalYield = (test, envFactors) => {
     let totalYield = 0;
     for (let x = 0; x < test.crops.length; x++) {
-        totalYield += getYieldForCrop(test.crops[x]);
+        totalYield += getYieldForCrop(test.crops[x], envFactors);
     };
     return totalYield;
 };
 
-const getCostsForCrop = test => getYieldForCrop(test) * test.cost;
+const getCostsForCrop = (test, envFactors) => getYieldForCrop(test, envFactors) * test.cost;
 
-const getRevenueForCrop = test => getYieldForCrop(test) * test.salePrice;
+const getRevenueForCrop = (test, envFactors) => getYieldForCrop(test, envFactors) * test.salePrice;
 
-const getProfitForCrop = test => getRevenueForCrop(test) - getCostsForCrop(test);
+const getProfitForCrop = (test, envFactors) => getRevenueForCrop(test, envFactors) - getCostsForCrop(test, envFactors);
 
-const getTotalProfit = test => {
+const getTotalProfit = (test, envFactors) => {
     let totalProfit = 0;
     for (let x = 0; x < test.crops.length; x++) {
-        totalProfit += getProfitForCrop(test.crops[x]);        
+        totalProfit += getProfitForCrop(test.crops[x], envFactors);        
     }
     return totalProfit;
 };
