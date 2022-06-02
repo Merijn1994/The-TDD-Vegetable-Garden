@@ -17,15 +17,15 @@ describe("getYieldForPlant", () => {
         expect(getYieldForPlant(corn)).toBe(30);
     });
 
-    test("Get yield for plant with environment factors", () => {
+    test("Get yield for plant with only sun environment factors", () => {
         const corn = {
             name: "corn",
             yield: 30,
             factor: {
                 sun: {
-                low: -50,
-                medium: 0,
-                high: 50,
+                low: 50,
+                medium: 100,
+                high: 150,
                 },
             },
             };
@@ -33,7 +33,51 @@ describe("getYieldForPlant", () => {
             const environmentFactors = {
             sun: "low",
             };
-        expect(getYieldForPlant(corn, environmentFactors)).toBe(30);
+        expect(getYieldForPlant(corn, environmentFactors)).toBe(15);
+    });
+
+    test("Get yield for plant with only wind environment factors", () => {
+        const corn = {
+            name: "corn",
+            yield: 30,
+            factor: {
+                wind: {
+                low: 150,
+                medium: 100,
+                high: 50,
+                },
+            },
+            };
+            
+            const environmentFactors = {
+            wind: "low",
+            };
+        expect(getYieldForPlant(corn, environmentFactors)).toBe(45);
+    });
+
+    test("Get yield for plant with wind and sun environment factors", () => {
+        const corn = {
+            name: "corn",
+            yield: 30,
+            factor: {
+                sun: {
+                low: 50,
+                medium: 100,
+                high: 150,
+                },
+                wind: {
+                    low: 150,
+                    medium: 100,
+                    high: 50,
+                }
+            },
+            };
+            
+            const environmentFactors = {
+            sun: "low",
+            wind: "low",
+            };
+        expect(getYieldForPlant(corn, environmentFactors)).toBe(22.5);
     });
 });
 
@@ -48,6 +92,78 @@ describe("getYieldForCrop", () => {
             numCrops: 10,
         };
         expect(getYieldForCrop(input)).toBe(30);
+    });
+
+    test("Get yield for crop, sun factor", () => {
+        const corn = {
+            name: "corn",
+            yield: 3,
+            factor: {
+                sun: {
+                low: 50,
+                medium: 100,
+                high: 150,
+                },
+            },       
+        };
+        const input = {
+            crop: corn,
+            numCrops: 10,
+        };
+        const environmentFactors = {
+            sun: "low",
+            };
+        expect(getYieldForCrop(input, environmentFactors)).toBe(15);
+    });
+
+    test("Get yield for crop, wind factor", () => {
+        const corn = {
+            name: "corn",
+            yield: 3,
+            factor: {
+                wind: {
+                low: 150,
+                medium: 100,
+                high: 50,
+                },
+            },       
+        };
+        const input = {
+            crop: corn,
+            numCrops: 10,
+        };
+        const environmentFactors = {
+            wind: "low",
+            };
+        expect(getYieldForCrop(input, environmentFactors)).toBe(45);
+    });
+
+    test("Get yield for crop, sun and wind factor", () => {
+        const corn = {
+            name: "corn",
+            yield: 3,
+            factor: {
+                sun: {
+                low: 50,
+                medium: 100,
+                high: 150,
+                },
+                wind: {
+                    low: 150,
+                    medium: 100,
+                    high: 50,
+                }
+            },     
+        };
+        const input = {
+            crop: corn,
+            numCrops: 10,
+        };
+        const environmentFactors = {
+            sun: "low",
+            wind: "low",
+            };
+        expect(getYieldForCrop(input, environmentFactors)).toBe(22.5);
     });
 });
 
